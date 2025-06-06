@@ -1,0 +1,13 @@
+[data-wait-on] {
+  position: relative;
+  display: inline-block;
+}
+
+[data-wait-on]::after {
+  content: attr(data-wait-points);
+  position: absolute;
+  pointer-events: none;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
