@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        button {
+            cursor: pointer;
+            min-width: 250px;
+            height: 80px;
+            background-color: #45bb45;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 40px;
+        }
+
+        [data-wait-on] {
+            position: relative;
+            display: inline-block;
+        }
+
+        [data-wait-on]::after {
+            content: attr(data-wait-points);
+            position: absolute;
+            pointer-events: none;
+            font-size: inherit;
+            font-weight: inherit;
+            color: inherit;
+        }
+
+        span {
+            color: red;
+        }
+    </style>
+    <button class="">Click me</button>
+    <button class="" data-wait-points="" data-wait-on="true"><span>Click me span</span></button>
+
+    <script>
+        var translation = "";
+
+        class WaitPoints {
+            /**
+             * Предназначен для отображения эффекта "ожидания" на HTML-элементе.
+             * К тексту элемента анимированно добавляются точки (.), имитируя процесс загрузки.
+             * 
+             * ⚠️ Ограничения:
+             * - Элемент **не должен содержать дочерних тегов**, только текст.
+             * - Эффект не будет применён повторно, если уже активен на элементе.
+             * 
+             * Использование:
+             *   WaitPoints.show(elem);    // Запускает эффект
+             * 
+             * @param {HTMLElement} elem - Элемент, на котором показывается эффект загрузки.
+             * @param {Object} [options] - Опции настройки эффекта.
+             * @param {number} [options.timeOut=200] - Интервал обновления эффекта в миллисекундах.
+             * @param {string} [options.text=this.defaultWaitText] - Текст, который отображается перед эффектом загрузки.
+             * 
+             *   WaitPoints.hide(elem);    // Останавливает эффект и восстанавливает текст
+             * @param {HTMLElement} elem - Элемент, на котором показывается эффект загрузки.
+             */
+            static defaultWaitText = "Wait"
+            static maxPointCount = 3
+
+            static _isElemCantBeWaitOn(elem) {
+                // проверяем нет ли дочерних элементов
+                if (elem.children.length) { 
+                    console.warn(`${elem.outerHTML} не должен содержать дочерних элементов, только текст!`)
+                    return false
+                }
+                if (this._isElemHasWaiting(elem)) {
+                    console.warn(`${elem.outerHTML} уже отображает эффект загрузки`)
+                    return false
+                }
+                return true
+            }
+
+            static _isElemHasWaiting(elem) {
+                // проверяем не уснановлен ли эффект загрузки на элементе
+                return elem.dataset.waitOn == "true"
+            }
+
+            static show(elem, options = {}) {
+                if (!this._isElemCantBeWaitOn(elem)) {
+                    return
+                }
+                const {
+                    timeOut = 200,
+                    text = this.defaultWaitText,
+                } = options;
+                elem.dataset.origText = elem.innerText
+                elem.innerText = text;
+                elem.dataset.waitOn = "true"
+                let pointCount = 0;
+                const intervalId = setInterval(() => {
+                    for (let i = 0; i <= pointCount; i++) {
+                        elem.dataset.waitPoints = '.'.repeat(pointCount);
+                    }
+                    pointCount++;
+                    if (pointCount > this.maxPointCount) {
+                        pointCount = 0;
+                    }
+                }, timeOut);
+                elem.dataset.waitIntervalId = intervalId;
+            }
+
+            static hide(elem) {
+                if (!this._isElemHasWaiting(elem)) {
+                    console.warn(`${elem.outerHTML} не имеет эффекта загрузки`)
+                    return
+                }
+                elem.dataset.waitOn == "false"
+                elem.innerText = elem.dataset.origText
+                const intervalId = elem.dataset.waitIntervalId;
+                if (intervalId) {
+                    clearInterval(Number(intervalId));
+                    delete elem.dataset.waitIntervalId;
+                }
+                delete elem.dataset.waitPoints;
+            }
+        }
+        var button = document.querySelector('button')
+        var buttons = document.querySelectorAll('button')
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                WaitPoints.show(button)
+            })
+        })
+
+    </script>
+</body>
+
+</html>
