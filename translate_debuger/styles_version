@@ -48,15 +48,18 @@ class TranslateDebuger {
         this._additionalClasses = new Set()
 
     }
-
-    _getOrCreateStyleElem() {
-        var styleElem = document.getElementById(TranslateDebuger.STYLE_ID)
-        if (styleElem == undefined) {
-            styleElem = document.createElement('style')
-            styleElem.id = TranslateDebuger.STYLE_ID
-            document.querySelector('body').appendChild(styleElem)
+    _removeStyles() {
+        var style = document.getElementById(TranslateDebuger.STYLE_ID)
+        if (style) {
+            style.remove()
         }
-        styleElem.innerHTML = ""
+    }
+
+    _getStyleElem() {
+        this._removeStyles()
+        var styleElem = document.createElement('style')
+        styleElem.id = TranslateDebuger.STYLE_ID
+        document.querySelector('body').appendChild(styleElem)
         return styleElem
     }
 
@@ -74,7 +77,7 @@ class TranslateDebuger {
     }
 
     show(colorName) {
-        var styleElem = this._getOrCreateStyleElem()
+        var styleElem = this._getStyleElem()
         var cssRule = TranslateDebuger.CSSRULES[colorName]
         if (cssRule == undefined) {
             cssRule = TranslateDebuger.CSSRULES.green
@@ -92,10 +95,7 @@ class TranslateDebuger {
         })
     }
     hide() {
-        var style = document.getElementById(TranslateDebuger.STYLE_ID)
-        if (style) {
-            style.remove()
-        }
+        this._removeStyles()
     }
 
     listenGetParamFlag() {
