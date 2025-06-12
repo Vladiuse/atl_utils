@@ -82,7 +82,7 @@ class TranslateDebuger {
         if (cssRule == undefined) {
             cssRule = TranslateDebuger.CSSRULES.green
         }
-        var rule = `[class*=${TranslateDebuger.TRANSLATE_ELEM_CLASS_PREFIX}]${cssRule}`
+        var rule = `[class*="${TranslateDebuger.TRANSLATE_ELEM_CLASS_PREFIX}"]${cssRule}`
         styleElem.sheet.insertRule(rule)
 
         var cssRuleAditional = TranslateDebuger.CSS_RULES_ADDITIONAL[colorName]
