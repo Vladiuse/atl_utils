@@ -1,3 +1,7 @@
+async function waitForTranslation(){
+    console.warn("waitForTranslation must be rewrite")
+}
+
 class TranslateDebuger {
     static GET_PARAM_FLAG_NAME = 'translation_debug'
     static STYLE_ID = `${TranslateDebuger.GET_PARAM_FLAG_NAME}_style`
@@ -98,7 +102,8 @@ class TranslateDebuger {
         this._removeStyles()
     }
 
-    listenGetParamFlag() {
+    async listenGetParamFlag() {
+        await waitForTranslation()
         var url = new URLSearchParams(document.location.search)
         var colorName = url.get(TranslateDebuger.GET_PARAM_FLAG_NAME)
         if (colorName != null) {
